@@ -4,6 +4,7 @@ const BorrowedBookModel = require('../models/borrowedBook');
 
 class User {
 
+  //validacao das variaveis necessarias para se criar um livro(todos os erros serao exibidos de uma unica vez)
   async validateBook(logged_user_id, tittle, pages) {
     try {
       let errors = [];
@@ -35,6 +36,7 @@ class User {
     }
   }
 
+  //insercao de um novo livro no banco
   async insertBook(tittle, pages, id) {
     try {
       const newBook = new BookModel({
@@ -52,6 +54,7 @@ class User {
     }
   }
 
+  //verifica se o book_id esta presente dentro da collection lend_books, se o documento existir sera retornado true(sera usado para emitir erro)
   async checkLendBook(book_id) {
     try {
       let result = await LendBookModel.collection.findOne({ book_id: book_id });
@@ -66,6 +69,7 @@ class User {
     }
   }
 
+  //insercao de um novo livro emprestado na collection lend_books
   async insertLendBook(logged_user_id, book_id, to_user_id) {
     try {
       const newLendBook = new LendBookModel({
@@ -84,6 +88,7 @@ class User {
     }
   }
 
+  //validacao das variaveis necessarias para emprestar um livro
   async validateLendBook(logged_user_id, book_id, to_user_id) {
     try {
       let errors = [];
@@ -111,6 +116,7 @@ class User {
     }
   }
 
+  //validacao das variaveis necessarias devolver um livro
   async validateBorrowedBook(logged_user_id, book_id) {
     try {
       let errors = [];
@@ -128,6 +134,7 @@ class User {
     }
   }
 
+  //verifica se o book_id esta presente dentro da collection lend_books, se o documento existir sera retornado true(sera usado para emitir erro)
   async checkBorrowedBook(book_id) {
     try {
       let result = await BorrowedBookModel.collection.findOne({ book_id: book_id });
@@ -142,7 +149,6 @@ class User {
     }
   }
 
-
   async getLendBookById(book_id) {
     try {
       let book = await LendBookModel.collection.findOne({ book_id: book_id });
@@ -153,6 +159,7 @@ class User {
     }
   }
 
+  //insercao de um novo livro na collection borrowed_books(quem pegou emprestado e devolveu)
   async insertBorrowedBook(logged_user_id, book_id, book) {
     try {
       console.log('insertBorrowedBook', book);
@@ -175,6 +182,7 @@ class User {
     }
   }
 
+  //remocao do livro da collection lend_books, isso ocorra caso o livro tenha sido devolvido(para ser possivel emprestar o mesmo livro novamente)
   async removeLendBook(book) {
     try {
       await LendBookModel.collection.removeOne({ book_id: book.book_id });
@@ -183,6 +191,7 @@ class User {
     }
   }
 
+  //remocao do licro da collection borrowed_books, isso acontecera caso o livro tenha sido emprestado(podera ser possivel devolver o livro novamente)
   async removeBorrowedBook(book) {
     try {
       await BorrowedBookModel.collection.removeOne({ book_id: book.book_id });
