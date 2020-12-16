@@ -8,8 +8,12 @@ class User {
     try {
       let errors = [];
 
-      if (!name || !email) {
-        errors.push({ msg: 'Preencha todos os campos' });
+      if (!name) {
+        errors.push({ msg: 'Preencha o campo name' });
+      }
+
+      if (!email) {
+        errors.push({ msg: 'Preencha o campo email' });
       }
 
       if (user) {
