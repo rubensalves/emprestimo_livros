@@ -69,6 +69,7 @@ class User {
       let user = await handleUser.getUserById(logged_user_id);
 
       if (!user) {
+        console.log('entrou aqui');
         res.send('USUARIO NAO ENCONTRADO')
       }
 
