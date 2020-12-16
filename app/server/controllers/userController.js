@@ -115,8 +115,8 @@ class User {
         }
 
         let lentBook = await handleBook.insertLendBook(logged_user_id, book_id, to_user_id);
-        await handleUser.processUpdate(userLogged, 'lend_books', lentBook);
         await handleUser.processUpdate(userToBorrow, 'borrowed_books', lentBook);
+        await handleUser.processUpdate(userLogged, 'lend_books', lentBook);
         await handleBook.removeBorrowedBook(lentBook);
         res.send(lentBook);
       }
@@ -150,6 +150,7 @@ class User {
         let book = await handleBook.getLendBookById(book_id);
         let borrowedBook = await handleBook.insertBorrowedBook(logged_user_id, book_id, book);
         await handleUser.processUpdate(userLogged, 'borrowed_books', book);
+        await handleUser.processUpdate(userLogged, 'lend_book', borrowedBook);
         await handleBook.removeLendBook(book);
 
         res.send(borrowedBook);

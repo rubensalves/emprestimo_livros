@@ -1,4 +1,5 @@
 const UserModel = require('../models/user');
+const moment = require('moment');
 
 class User {
 
@@ -44,7 +45,7 @@ class User {
       const newUser = new UserModel({
         name: name,
         email: email,
-        created_at: Date.now(),
+        created_at: moment(),
         books: [],
         lend_books: [],
         borrowed_books: []
@@ -111,7 +112,7 @@ class User {
           from_user: book.from_user,
           to_user: book.to_user,
           lent_at: book.lent_at,
-          returned_at: null
+          returned_at: moment()
         });
       }
 
@@ -121,10 +122,9 @@ class User {
           from_user: book.from_user,
           to_user: book.to_user,
           lent_at: book.lent_at,
-          returned_at: Date.now()
+          returned_at: moment()
         });
       }
-
       console.log('allBooks', allBooks);
       await UserModel.updateOne({ _id: user._id }, { $set: { [userProperty]: allBooks } });
       return;

@@ -1,6 +1,7 @@
 const BookModel = require('../models/book');
 const LendBookModel = require('../models/lendBook');
 const BorrowedBookModel = require('../models/borrowedBook');
+const moment = require('moment');
 
 class User {
 
@@ -42,7 +43,7 @@ class User {
       const newBook = new BookModel({
         tittle: tittle,
         pages: pages,
-        created_at: Date.now(),
+        created_at: moment(),
         owner: id,
       });
 
@@ -76,7 +77,7 @@ class User {
         book_id: book_id,
         from_user: logged_user_id,
         to_user: to_user_id,
-        lent_at: Date.now(),
+        lent_at: moment(),
       })
 
       let result = await LendBookModel.collection.insertOne(newLendBook);
@@ -171,7 +172,7 @@ class User {
         //estou passando para o to_user: book.from_user
         to_user: book.from_user,
         lent_at: book.lent_at,
-        return_at: Date.now()
+        return_at: moment()
       })
 
       let result = await BorrowedBookModel.collection.insertOne(newBorrowedBook);

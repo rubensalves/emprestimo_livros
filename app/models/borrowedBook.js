@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+
 const BorrowedBookSchema = new mongoose.Schema({
   book_id: {
     type: String,
@@ -15,11 +16,9 @@ const BorrowedBookSchema = new mongoose.Schema({
   },
   lent_at: {
     type: Date,
-    default: Date.now
   },
   returned_at: {
     type: Date,
-    default: Date.now
   }
 });
 
