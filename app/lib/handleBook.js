@@ -77,6 +77,7 @@ class User {
 
       let result = await LendBookModel.collection.insertOne(newLendBook);
 
+      console.log('insertLendBook::::::::::::::::::', result.ops[0]);
       return result.ops[0];
     } catch (e) {
       throw e;
@@ -154,6 +155,7 @@ class User {
 
   async insertBorrowedBook(logged_user_id, book_id, book) {
     try {
+      console.log('insertBorrowedBook', book);
       const newBorrowedBook = new BorrowedBookModel({
         book_id: book_id,
         from_user: logged_user_id,
@@ -176,6 +178,14 @@ class User {
   async removeLendBook(book) {
     try {
       await LendBookModel.collection.removeOne({ book_id: book.book_id });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async removeBorrowedBook(book) {
+    try {
+      await BorrowedBookModel.collection.removeOne({ book_id: book.book_id });
     } catch (e) {
       throw e;
     }

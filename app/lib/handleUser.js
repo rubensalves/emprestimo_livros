@@ -68,103 +68,67 @@ class User {
     }
   }
 
-  // Faz o update no usuario com os livros
-  async processUpdateBook(user, userId, book) {
+  async processUpdate(user, userProperty, book) {
     try {
-
       let allBooks = [];
 
-      //verifica se o usuario ja possui livros, caso possua, o array e populado e depois sera feito um unico update(assim evitara sobrescrever)
-      if (user.books.length > 0) {
-        for (let userBook of user.books) {
-          allBooks.push({
-            id: userBook.id,
-            tittle: userBook.tittle,
-            pages: userBook.pages,
-            created_at: userBook.created_at
-          })
+      //popula o arrray do que ja estiver salvo no banco(livros, emprestimo de livros, e livros que pegou emprestado, dependera da userProperty enviada).
+      if (user[userProperty].length > 0) {
+        for (let userBook of user[userProperty]) {
+          if (userProperty === 'books') {
+            allBooks.push({
+              id: userBook.id,
+              tittle: userBook.tittle,
+              pages: userBook.pages,
+              created_at: userBook.created_at
+            })
+          }
+
+          if (userProperty === 'lend_books' || userProperty === 'borrowed_books') {
+            allBooks.push({
+              book_id: book.book_id,
+              from_user: book.from_user,
+              to_user: book.to_user,
+              lent_at: book.lent_at,
+              returned_at: book.returned_at
+            })
+          }
         }
       }
 
-      //adiciona livros novos ao array
-      allBooks.push({
-        id: book._id,
-        tittle: book.tittle,
-        pages: book.pages,
-        created_at: book.created_at
-      })
-
-
-      let result = await UserModel.findOneAndUpdate({ _id: userId }, { $set: { "books": allBooks } });
-
-      return result;
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  // Faz o update no usuario com o livro emprestado
-  async processUpdateLendBook(user, userId, lendBook) {
-    try {
-      let allLendBooks = [];
-
-      //verifica se o usuario ja possui livros emprestados, caso possua, o array e populado e depois sera feito um unico update(assim evitara sobrescrever)
-      if (user.lend_books.length > 0) {
-        for (let userLentBook of user.lend_books) {
-          allLendBooks.push({
-            book_id: userLentBook.id,
-            from_user: userLentBook.tittle,
-            to_user: userLentBook.pages,
-            lent_at: userLentBook.created_at,
-            returned_at: ''
-          })
-        }
+      if (userProperty === 'books') {
+        allBooks.push({
+          id: book.id,
+          tittle: book.tittle,
+          pages: book.pages,
+          created_at: book.created_at
+        })
       }
 
-      //adiciona livros emprestado ao array
-      allLendBooks.push({
-        book_id: lendBook.book_id,
-        from_user: lendBook.from_user,
-        to_user: lendBook.to_user,
-        lent_at: lendBook.lent_at,
-      })
-
-      let result = await UserModel.findOneAndUpdate({ _id: userId }, { $set: { "lend_books": allLendBooks } });
-      return result;
-
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  // Faz o update no usuario que esta pegando o livro emprestado
-  async processUpdateBorrowedBook(user, userId, borrowedBook) {
-    try {
-      let allBorrowedBooks = [];
-
-      //verifica se o usuario ja possui livros emprestados, caso possua, o array e populado e depois sera feito um unico update(assim evitara sobrescrever)
-      if (user.lend_books.length > 0) {
-        for (let userLentBook of user.lend_books) {
-          allBorrowedBooks.push({
-            book_id: userLentBook.id,
-            from_user: userLentBook.tittle,
-            to_user: userLentBook.pages,
-            lent_at: userLentBook.created_at,
-            returned_at: ''
-          })
-        }
+      if (userProperty === 'lend_books') {
+        allBooks.push({
+          book_id: book.book_id,
+          from_user: book.from_user,
+          to_user: book.to_user,
+          lent_at: book.lent_at,
+          returned_at: null
+        });
       }
 
-      //adiciona livros emprestado ao array
-      allBorrowedBooks.push({
-        book_id: borrowedBook.book_id,
-        from_user: borrowedBook.from_user,
-        to_user: borrowedBook.to_user,
-        lent_at: borrowedBook.lent_at,
-      })
+      if (userProperty === 'borrowed_books') {
+        allBooks.push({
+          book_id: book.book_id,
+          from_user: book.from_user,
+          to_user: book.to_user,
+          lent_at: book.lent_at,
+          returned_at: Date.now()
+        });
+      }
 
-      let result = await UserModel.findOneAndUpdate({ _id: userId }, { $set: { "borrowed_books": allBorrowedBooks } });
-      return result;
+      console.log('allBooks', allBooks);
+      await UserModel.updateOne({ _id: user._id }, { $set: { [userProperty]: allBooks } });
+      return;
+
     } catch (e) {
       throw e;
     }
